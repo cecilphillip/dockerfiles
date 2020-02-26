@@ -15,7 +15,7 @@ ENV PATH=${ACTIVEMQ_HOME}/bin:$PATH
 
 WORKDIR /activemq
 
-RUN apt update -qy && apt install wget -qy && \
+RUN apt update -qy && apt install wget -qy  --no-install-recommends && \
     wget http://archive.apache.org/dist/activemq/${ACTIVEMQ_VERSION}/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz && \
     tar zxvf apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz && rm apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz
 
