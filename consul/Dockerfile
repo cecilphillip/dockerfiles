@@ -1,4 +1,4 @@
-FROM consul:1.7.0
+FROM consul:1.7.2
 
 RUN mkdir -p /etc/consul.d
 
