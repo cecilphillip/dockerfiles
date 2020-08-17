@@ -1,0 +1,17 @@
+{
+  "datacenter": "local_dc",
+  "log_level": "info",
+
+  "client_addr": "0.0.0.0",
+  "bootstrap": true,
+  "disable_update_check": true,
+  "enable-local-script-checks": true,
+  "telemetry": {
+    "prometheus_retention_time": "60s"
+  },
+  "ui": true,
+  "dns_config": {
+    "enable_truncate": true,
+    "udp_answer_limit": 100
+  }
+}

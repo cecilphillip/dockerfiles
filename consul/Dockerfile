@@ -1,7 +1,5 @@
-FROM consul:1.7.2
+FROM consul:1.8.3
 
 RUN mkdir -p /etc/consul.d
-
-CMD ["agent", "-dev", "-ui", "-client", "0.0.0.0", \
-    "-bind", "0.0.0.0", "-config-dir", "/etc/consul.d", \
-    "-enable-local-script-checks"]
+COPY consul.server.json /etc/consul.d/
+CMD ["agent", "-dev", "-config-dir", "/etc/consul.d"]

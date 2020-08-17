@@ -1,0 +1,13 @@
+version: "3.7"
+
+services:  
+  #### Consul #####
+  consul:
+    container_name: consul_service
+    image: consul:1.8.3
+    restart: unless-stopped
+    ports:
+      - "8500:8500" # HTTP API and UI port
+    command: consul agent -dev -config-dir /etc/consul.d
+    volumes:
+      - ./consul.server.json:/etc/consul.d/consul.server.json
