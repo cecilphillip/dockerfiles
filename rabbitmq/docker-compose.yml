@@ -1,0 +1,16 @@
+version: "3.7"
+
+services:
+
+ ##### Rabbitmq #####
+  rabbitmq:
+    image: "rabbitmq:3.8.8-management"
+    container_name: "rabbitmq_server"
+    hostname: "rabbitmq_server"
+    environment:
+      - RABBITMQ_DEFAULT_USER=demo
+      - RABBITMQ_DEFAULT_PASS=demo
+      - RABBITMQ_ERLANG_COOKIE=demo_cookie_1234
+    ports:
+      - 5672:5672
+      - 15672:15672
