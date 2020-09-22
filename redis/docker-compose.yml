@@ -1,0 +1,12 @@
+version: "3.7"
+
+services:
+  ##### Redis #####
+  redis:
+    container_name: "redis_service"
+    image: "redis:6.0.7-alpine"
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
