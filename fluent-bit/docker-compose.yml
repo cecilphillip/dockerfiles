@@ -1,0 +1,11 @@
+version: "3.7"
+
+services:  
+  fluent-bit:
+    image: fluent/fluent-bit:1.5.5
+    container_name: "fluentbit_service"
+    hostname: "fluentbit_service"
+    ports:
+      - "24224:24224"
+    volumes:
+      - "./fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro"
