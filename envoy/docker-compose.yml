@@ -1,0 +1,10 @@
+services:
+  envoy:
+    image: bitnami/envoy:1.25
+    container_name: envoy_server
+    ports:
+      - 8080:8080 # proxy port
+      - 9901:9901 # admin port
+    volumes:
+      - ./envoy.yaml:/opt/bitnami/envoy/conf/envoy.yaml
+      - ./tmp:/tmp/

@@ -1,0 +1,64 @@
+services:
+  #### Consul #####
+  consul:
+    container_name: consul_service
+    hostname: consul_service
+    image: consul:1.15
+    restart: unless-stopped
+    ports:
+      - "8500:8500" # HTTP API and UI port
+    command: consul agent -dev -config-dir /etc/consul.d
+    volumes:
+      - ./consul.server.json:/etc/consul.d/consul.server.json
+  
+  ##### Rabbitmq #####
+  rabbitmq01:
+    image: "rabbitmq:3.11-management"
+    container_name: "rabbitmq_server_01"
+    hostname: "rabbitmq_server_01"
+    volumes:
+      - ./rabbitmq_enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      - ./r1/:/config/
+    environment:
+      - RABBITMQ_DEFAULT_USER=demo
+      - RABBITMQ_DEFAULT_PASS=demo
+      - RABBITMQ_ERLANG_COOKIE=demo_cookie
+      - RABBITMQ_CONFIG_FILE=/config/rabbitmq-consul.conf
+    ports:
+      - 5672:5672 # client port
+      - 15672:15672 # management ort
+
+  rabbitmq02:
+    image: "rabbitmq:3.11-management"
+    container_name: "rabbitmq_server_02"
+    hostname: "rabbitmq_server_02"
+    volumes:
+      - ./rabbitmq_enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      - ./r2/:/config/
+    environment:
+      - RABBITMQ_DEFAULT_USER=demo
+      - RABBITMQ_DEFAULT_PASS=demo
+      - RABBITMQ_ERLANG_COOKIE=demo_cookie
+      - RABBITMQ_CONFIG_FILE=/config/rabbitmq-consul.conf
+    ports:
+      - 15673:15672 # management ort
+
+  rabbitmq03:
+    image: "rabbitmq:3.11-management"
+    container_name: "rabbitmq_server_03"
+    hostname: "rabbitmq_server_03"
+    volumes:
+      - ./rabbitmq_enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      - ./r3/:/config/
+    environment:
+      - RABBITMQ_DEFAULT_USER=demo
+      - RABBITMQ_DEFAULT_PASS=demo
+      - RABBITMQ_ERLANG_COOKIE=demo_cookie
+      - RABBITMQ_CONFIG_FILE=/config/rabbitmq-consul.conf
+    ports:
+      - 15674:15672 # management ort
+
+networks:
+  default:
+    name: rabbit
+    driver: bridge

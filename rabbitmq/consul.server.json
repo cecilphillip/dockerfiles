@@ -4,9 +4,10 @@
   "client_addr": "0.0.0.0",
   "bootstrap": true,
   "disable_update_check": true,
+  "enable_local_script_checks": true,
   "telemetry": {
     "prometheus_retention_time": "60s"
-  },  
+  },
   "ui_config": {
     "enabled": true
   },
