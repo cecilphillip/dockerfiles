@@ -10,6 +10,7 @@ services:
     command: consul agent -dev -config-dir /etc/consul.d
     volumes:
       - ./consul.server.json:/etc/consul.d/consul.server.json
+      - ./tmp/connsul:/opt/consul
   
   ##### Rabbitmq #####
   rabbitmq01:
@@ -60,5 +61,5 @@ services:
 
 networks:
   default:
-    name: rabbit
+    name: rabbit-consul
     driver: bridge

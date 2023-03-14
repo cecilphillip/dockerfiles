@@ -1,6 +1,7 @@
 {
   "datacenter": "local_dc",
-  "log_level": "info",
+  "data_dir" : "/opt/consul",
+  "log_level": "debug",
   "client_addr": "0.0.0.0",
   "bootstrap": true,
   "disable_update_check": true,
