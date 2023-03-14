@@ -1,16 +1,17 @@
 services:
   ##### etcd #####
-  etcd:
-    image: bitnami/etcd:3.5.11
+  etcd_server1:
+    image: bitnami/etcd:3.5.7
+    container_name: etcd_server1
+    hostname: "etcd_server1"
     user: root
     restart: always
     volumes:
       - ./tmp/etcd_data:/etcd_data
+      - ./etcd.yaml:/opt/bitnami/etcd/conf/etcd.yaml
     environment:
-      ETCD_DATA_DIR: /etcd_data
-      ETCD_ENABLE_V2: "true"
-      ALLOW_NONE_AUTHENTICATION: "yes"
-      ETCD_ADVERTISE_CLIENT_URLS: "http://etcd:2379"
-      ETCD_LISTEN_CLIENT_URLS: "http://0.0.0.0:2379"
+      - ETCD_ENABLE_V2="true"
+      - ALLOW_NONE_AUTHENTICATION=yes
     ports:
-      - "2379:2379" # client requests
+      - 2379:2379 # client requests
+      - 2380:2380
