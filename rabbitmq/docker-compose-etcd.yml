@@ -1,0 +1,69 @@
+services:
+  #### ETCD ####
+  etcd_server1:
+    image: bitnami/etcd:3.5.7
+    container_name: etcd_server1
+    hostname: "etcd_server1"
+    user: root
+    restart: always
+    volumes:
+      - ./tmp/etcd_data:/etcd_data
+      - ./etcd.yaml:/opt/bitnami/etcd/conf/etcd.yaml
+    environment:
+      - ETCD_ENABLE_V2="true"
+      - ALLOW_NONE_AUTHENTICATION=yes
+    ports:
+      - 2379:2379 # client requests
+      - 2380:2380
+
+  ##### Rabbitmq #####
+  rabbitmq01:
+    image: "rabbitmq:3.11-management"
+    container_name: "rabbitmq_server_01"
+    hostname: "rabbitmq_server_01"
+    volumes:
+      - ./rabbitmq_enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      - ./r1/:/config/
+    environment:
+      - RABBITMQ_DEFAULT_USER=demo
+      - RABBITMQ_DEFAULT_PASS=demo
+      - RABBITMQ_ERLANG_COOKIE=demo_cookie
+      - RABBITMQ_CONFIG_FILE=/config/rabbitmq-etcd.conf
+    ports:
+      - 5672:5672 # client port
+      - 15672:15672 # management ort
+
+  rabbitmq02:
+    image: "rabbitmq:3.11-management"
+    container_name: "rabbitmq_server_02"
+    hostname: "rabbitmq_server_02"
+    volumes:
+      - ./rabbitmq_enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      - ./r2/:/config/
+    environment:
+      - RABBITMQ_DEFAULT_USER=demo
+      - RABBITMQ_DEFAULT_PASS=demo
+      - RABBITMQ_ERLANG_COOKIE=demo_cookie
+      - RABBITMQ_CONFIG_FILE=/config/rabbitmq-etcd.conf
+    ports:
+      - 15673:15672 # management ort
+
+  rabbitmq03:
+    image: "rabbitmq:3.11-management"
+    container_name: "rabbitmq_server_03"
+    hostname: "rabbitmq_server_03"
+    volumes:
+      - ./rabbitmq_enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      - ./r3/:/config/
+    environment:
+      - RABBITMQ_DEFAULT_USER=demo
+      - RABBITMQ_DEFAULT_PASS=demo
+      - RABBITMQ_ERLANG_COOKIE=demo_cookie
+      - RABBITMQ_CONFIG_FILE=/config/rabbitmq-etcd.conf
+    ports:
+      - 15674:15672 # management ort
+
+networks:
+  default:
+    name: rabbit-consul
+    driver: bridge

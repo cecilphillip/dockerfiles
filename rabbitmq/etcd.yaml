@@ -1,0 +1,10 @@
+name: simple-cluster
+data-dir: /etcd_data
+initial-cluster-state: new
+initial-cluster-token: simple-cluster-token
+advertise-client-urls: http://etcd_server1:2379
+# List of comma separated URLs to listen on for peer traffic.
+listen-peer-urls: http://0.0.0.0:2380
+
+# List of comma separated URLs to listen on for client traffic.
+listen-client-urls: http://0.0.0.0:2379
