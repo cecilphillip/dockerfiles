@@ -11,7 +11,7 @@ scrape_configs:
     scrape_interval: 15s
     metrics_path: /metrics
     static_configs:
-      - targets: ["host.docker.internal:50501"]
+      - targets: ["host.docker.internal:9323"]
   
   # Scrape exposed forwarded collector metrics
   - job_name: "collector_forwarded"

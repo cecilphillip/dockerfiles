@@ -25,7 +25,8 @@ exporters:
       insecure: true
 
   prometheus: # metrics
-    endpoint: "0.0.0.0:9090"
+    endpoint: "0.0.0.0:8889"
+    namespace: demo
     send_timestamps: true
 
   loki: # logs
