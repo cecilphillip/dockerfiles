@@ -1,0 +1,50 @@
+receivers:
+  otlp:
+    protocols:
+      http:
+      grpc:
+
+processors:
+  attributes:
+    actions:
+      - key: environment
+        value: demo
+        action: upsert
+  batch:
+
+extensions:
+  pprof:
+  health_check:
+    endpoint: "0.0.0.0:13133"
+    path: "/health/status"
+
+exporters:
+  zipkin: # traces
+    endpoint: "http://zipkin:9411/api/v2/spans"
+    tls:
+      insecure: true
+
+  prometheus: # metrics
+    endpoint: "0.0.0.0:9090"
+    send_timestamps: true
+
+  loki: # logs
+    endpoint: http://loki:3100/loki/api/v1/push
+    headers:
+      "X-Scope-OrgID": acme
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [zipkin]
+
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [prometheus]
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [loki]
