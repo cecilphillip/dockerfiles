@@ -1,0 +1,52 @@
+receivers:
+  otlp:
+    protocols:
+      http:
+      grpc:
+
+processors:
+  attributes:
+    actions:
+      - key: environment
+        value: demo
+        action: upsert
+  batch:
+
+extensions:
+  pprof:
+  health_check:
+    endpoint: "0.0.0.0:13133"
+    path: "/health/status"
+
+exporters:
+  otlp/tempo:
+    endpoint: tempo:4317
+    tls:
+      insecure: true
+
+  prometheus: # metrics
+    endpoint: "0.0.0.0:8889"
+    namespace: demo
+    send_timestamps: true
+
+  loki: # logs
+    endpoint: http://loki:3100/loki/api/v1/push
+    headers:
+      "X-Scope-OrgID": acme
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp/tempo]
+
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [prometheus]
+      
+    logs:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [loki]

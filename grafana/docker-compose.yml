@@ -1,0 +1,79 @@
+services:
+  minio:
+    container_name: minio
+    image: quay.io/minio/minio:latest
+    environment:
+      - MINIO_ROOT_USER=demouser
+      - MINIO_ROOT_PASSWORD=demopass
+      - MINIO_VOLUMES="/data"      
+    volumes:
+      - ./tmp/minio/data:/data
+    ports:
+      - 9000:9000 # client
+      - 9001:9001 # browser
+    command: server --console-address ":9001"
+
+  tempo:
+    image: grafana/tempo:2.0.1
+    container_name: tempo
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml
+      - ./tmp/tempo:/tmp/tempo
+    ports:
+      - "3200:3200" # tempo 
+    depends_on:
+      - minio
+
+  loki:
+    image: grafana/loki:2.7.4
+    container_name: loki
+    ports:
+      - 3100:3100
+    volumes:
+      - ./tmp/loki:/loki/
+      - ./loki-config.yml:/etc/loki/local-config.yaml:ro
+    command: -config.file=/etc/loki/local-config.yaml
+    depends_on:
+      - minio
+
+  prometheus:
+    image: prom/prometheus:v2.42.0
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    command: [ --config.file=/etc/prometheus/prometheus.yml ]
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
+  grafana:
+    image: grafana/grafana:9.4.3
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./tmp/grafana/:/var/lib/grafana/
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
+
+  otel-collector:
+    container_name: otelcollector
+    image: otel/opentelemetry-collector-contrib:0.73.0
+    command: [ --config=/etc/otel-collector-config.yml ]
+    volumes:
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+    depends_on:
+      - prometheus
+      - loki
+      - tempo
+    ports:
+      #   - 1888:1888 # pprof extension
+      - 8888:8888 # Prometheus metrics exposed by the collector
+      - 8889:8889 # Prometheus exporter metrics
+      #   - 13133:13133 # health_check extension
+      - 4317:4317 # OTLP gRPC receiver
+      - 4318:4318 # OTLP http receiver
+    #   - 55679:55679 # zpages extension
