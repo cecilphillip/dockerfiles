@@ -9,6 +9,8 @@ services:
       - ./tmp/loki:/loki/
       - ./loki-config.yml:/etc/loki/local-config.yaml:ro
     command: -config.file=/etc/loki/local-config.yaml
+    depends_on:
+      - minio
 
   promtail:
     image: grafana/promtail:2.8.2
@@ -25,10 +27,10 @@ services:
       - GF_AUTH_DISABLE_LOGIN_FORM=true
     volumes:
       - ./tmp/grafana/:/var/lib/grafana/
-      - ./ds.yaml:/etc/grafana/provisioning/datasources/ds.yaml    
+      - ./ds.yaml:/etc/grafana/provisioning/datasources/ds.yaml
     ports:
       - "3000:3000"
-  
+
   minio:
     image: minio/minio
     entrypoint:
@@ -47,4 +49,3 @@ services:
       - 9000
     volumes:
       - ./tmp/minio/data/:/data/
-  
