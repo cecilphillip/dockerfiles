@@ -7,16 +7,28 @@ server:
   grpc_listen_port: 9096
   log_level: info
 
+memberlist:
+  join_members:
+    - loki:7946
+
 common:
-  path_prefix: /loki
   storage:
-    filesystem:
-      chunks_directory: /loki/chunks
-      rules_directory: /loki/rules
+    s3:
+      endpoint: minio:9000
+      insecure: true
+      bucketnames: loki-data
+      access_key_id: loki
+      secret_access_key: supersecret
+      s3forcepathstyle: true
+  # storage:
+  #   filesystem:
+  #     chunks_directory: /loki/chunks
+  #     rules_directory: /loki/rules
+  path_prefix: /loki
   replication_factor: 1
   ring:
     kvstore:
-      store: inmemory
+      store: memberlist
 
 schema_config:
   configs:

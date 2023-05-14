@@ -28,3 +28,23 @@ services:
       - ./ds.yaml:/etc/grafana/provisioning/datasources/ds.yaml    
     ports:
       - "3000:3000"
+  
+  minio:
+    image: minio/minio
+    entrypoint:
+      - sh
+      - -euc
+      - |
+        mkdir -p /data/loki-data && \
+        mkdir -p /data/loki-ruler && \
+        minio server /data
+    environment:
+      - MINIO_ROOT_USER=loki
+      - MINIO_ROOT_PASSWORD=supersecret
+      - MINIO_PROMETHEUS_AUTH_TYPE=public
+      - MINIO_UPDATE=off
+    ports:
+      - 9000
+    volumes:
+      - ./tmp/minio/data/:/data/
+  
