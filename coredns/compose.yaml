@@ -1,0 +1,28 @@
+name: corednssrv
+
+services:
+
+  corednsserver:
+    image: coredns/coredns:1.11.1
+    container_name: corednsserver
+    hostname: corednsserver        
+    restart: unless-stopped
+    volumes:
+      - ./config/:/etc/coredns
+    command: -conf /etc/coredns/Corefile
+  
+  etcdserver:
+    image: docker.io/bitnami/etcd:3.5
+    ports:
+      - 2379:2379 # client requests
+      # - 2380:2380 # peer communication
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_NAME=etcdserver
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcdserver:2379
+   
+networks:
+  default:
+    name: coredns-etcd
+    driver: bridge

@@ -1,0 +1,49 @@
+name: etcdcluster
+
+services:
+  etcdserver1:
+    image: docker.io/bitnami/etcd:3.5
+    ports:
+      - 2379:2379 # client requests
+      # - 2380:2380 # peer communication
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_NAME=etcdserver1
+      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://etcdserver1:2380
+      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcdserver1:2379
+      - ETCD_INITIAL_CLUSTER_TOKEN=etcdcluster
+      - ETCD_INITIAL_CLUSTER=etcdserver1=http://etcdserver1:2380,etcdserver2=http://etcdserver2:2380,etcdserver3=http://etcdserver3:2380
+      - ETCD_INITIAL_CLUSTER_STATE=new
+
+  etcdserver2:
+    image: docker.io/bitnami/etcd:3.5
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_NAME=etcdserver2
+      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://etcdserver2:2380
+      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcdserver2:2379
+      - ETCD_INITIAL_CLUSTER_TOKEN=etcdcluster
+      - ETCD_INITIAL_CLUSTER=etcdserver1=http://etcdserver1:2380,etcdserver2=http://etcdserver2:2380,etcdserver3=http://etcdserver3:2380
+      - ETCD_INITIAL_CLUSTER_STATE=new      
+
+  etcdserver3:
+    image: docker.io/bitnami/etcd:3.5
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+      - ETCD_NAME=etcdserver3
+      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://etcdserver3:2380
+      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcdserver3:2379
+      - ETCD_INITIAL_CLUSTER_TOKEN=etcdcluster
+      - ETCD_INITIAL_CLUSTER=etcdserver1=http://etcdserver1:2380,etcdserver2=http://etcdserver2:2380,etcdserver3=http://etcdserver3:2380
+      - ETCD_INITIAL_CLUSTER_STATE=new
+
+networks:
+  default:
+    name: coredns-etcd
+    driver: bridge

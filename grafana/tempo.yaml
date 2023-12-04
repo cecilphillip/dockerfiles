@@ -16,16 +16,16 @@ compactor:
     block_retention: 1h # overall Tempo trace retention. set for demo purposes
 
 storage:
-  trace:
-    #backend: local                     # backend configuration to use
-    backend: s3
+  trace:                  
+    backend: s3 # backend configuration to use
     wal:
       path: /tmp/tempo/wal # where to store the the wal locally
     local:
       path: /tmp/tempo/blocks
     s3:
       bucket: tempo # how to store data in s3
-      endpoint: minio:9000
+      endpoint: minioserver:9000
+      forcepathstyle: true
       access_key: demouser
       secret_key: demopass
       insecure: true

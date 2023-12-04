@@ -2,6 +2,7 @@ auth_enabled: false
 
 server:
   http_listen_port: 3100
+  grpc_listen_port: 9096
 
 ingester:
   wal:
@@ -10,21 +11,25 @@ ingester:
     address: 0.0.0.0
     ring:
       kvstore:
-        store: inmemory
+        store: memberlist
       replication_factor: 1
     final_sleep: 0s
   chunk_idle_period: 5m
   chunk_retain_period: 30s
 
+memberlist:
+  join_members:
+    - loki:7946
+
 schema_config:
   configs:
-  - from: 2020-05-15
-    store: boltdb
-    object_store: filesystem
-    schema: v11
-    index:
-      prefix: index_
-      period: 168h
+    - from: 2020-10-24
+      store: boltdb-shipper
+      object_store: aws
+      schema: v12
+      index:
+        prefix: index_
+        period: 24h
 
 storage_config:
   boltdb:
@@ -33,7 +38,29 @@ storage_config:
   filesystem:
     directory: /tmp/loki/chunks
 
-limits_config:
-  enforce_metric_name: false
-  reject_old_samples: true
-  reject_old_samples_max_age: 168h
+  boltdb_shipper:
+    active_index_directory: /tmp/loki/boltdb-shipper-active
+    cache_location: /tmp/loki/boltdb-shipper-cache
+    cache_ttl: 24h # Can be increased for faster performance over longer query periods, uses more disk space
+    shared_store: s3
+
+  aws:
+    bucketnames: loki
+    s3forcepathstyle: true
+    endpoint: minioserver:9000
+    access_key_id: demouser
+    secret_access_key: demopass
+    insecure: true
+    http_config:
+      idle_conn_timeout: 90s
+      response_header_timeout: 0s
+      insecure_skip_verify: true
+
+# Needed for single binary mode
+# https://github.com/grafana/loki/issues/2815
+compactor:
+  working_directory: /tmp/loki/boltdb-shipper-compactor
+  shared_store: s3
+
+analytics:
+  reporting_enabled: false

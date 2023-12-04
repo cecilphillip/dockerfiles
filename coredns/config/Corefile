@@ -1,0 +1,14 @@
+.:53530 {
+    forward . 8.8.8.8 9.9.9.9
+    whoami
+    log
+    errors
+}
+
+service.local:53530 {
+    etcd {
+        path /coredns
+        endpoint http://localhost:2379
+    }
+    errors
+}
