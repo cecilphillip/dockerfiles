@@ -1,14 +1,23 @@
 .:53530 {
-    forward . 8.8.8.8 9.9.9.9
-    whoami
-    log
     errors
+    cache {
+        success 3000 10
+        denial 1500 10
+    }
+    health :8080
+    forward . 8.8.8.8 9.9.9.9    
 }
 
-service.local:53530 {
+svc.local:53530 {
+    errors
+    cache {
+        success 3000 10
+        denial 1500 10
+    }
     etcd {
         path /coredns
-        endpoint http://localhost:2379
+        endpoint http://etcdserver:2379
+        fallthrough
     }
-    errors
+    hosts
 }
