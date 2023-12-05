@@ -7,12 +7,17 @@ services:
     container_name: corednsserver
     hostname: corednsserver        
     restart: unless-stopped
+    ports:
+      - 53530:53530/udp
     volumes:
       - ./config/:/etc/coredns
     command: -conf /etc/coredns/Corefile
   
   etcdserver:
     image: docker.io/bitnami/etcd:3.5
+    container_name: etcdserver
+    hostname: etcdserver
+    restart: unless-stopped
     ports:
       - 2379:2379 # client requests
       # - 2380:2380 # peer communication

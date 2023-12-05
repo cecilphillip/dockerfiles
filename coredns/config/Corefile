@@ -1,23 +1,16 @@
-.:53530 {
+svc.base:53530 {
+    log
     errors
-    cache {
-        success 3000 10
-        denial 1500 10
-    }
-    health :8080
-    forward . 8.8.8.8 9.9.9.9    
+    etcd {
+        path /core
+        endpoint http://etcdserver:2379
+    }    
 }
 
-svc.local:53530 {
+.:53530 {
+    log
     errors
-    cache {
-        success 3000 10
-        denial 1500 10
-    }
-    etcd {
-        path /coredns
-        endpoint http://etcdserver:2379
-        fallthrough
-    }
-    hosts
+    health :8080
+    ready :8181
+    forward . 8.8.8.8 9.9.9.9    
 }
