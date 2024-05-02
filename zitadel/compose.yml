@@ -1,0 +1,56 @@
+services:
+  zitadel:
+    restart: "always"
+    image: "ghcr.io/zitadel/zitadel:latest"
+    command:
+      [
+        "start-from-init",
+        "--masterkey",
+        "MasterkeyNeedsToHave32Characters",
+        "--tlsMode",
+        "disabled",
+        " --config",
+        "/config/zitadel.yaml",
+        "--steps",
+        "/config/steps.yaml",
+      ]
+    environment:
+      - "ZITADEL_DATABASE_COCKROACH_HOST=roachserve"
+      - "ZITADEL_DATABASE_COCKROACH_PORT=26257"
+      - "ZITADEL_DATABASE_COCKROACH_DATABASE=zitadel"
+      - "ZITADEL_DATABASE_COCKROACH_USER_USERNAME=zitadel"
+      - "ZITADEL_EXTERNALSECURE=false"
+    depends_on:
+      cockroach:
+        condition: "service_healthy"
+    volumes:
+      - ./zitadel.yaml:/config/zitadel.yaml
+      - ./steps.yaml:/config/steps.yaml
+    ports:
+      - "8080:8080"
+
+  cockroach:
+    container_name: roachserve
+    hostname: roachserve
+    image: cockroachdb/cockroach:v23.2.4
+    ports:
+      - "26257:26257" # SQL
+      - "8000:8080" # HTTP
+    command: ["start-single-node", "--insecure"]
+    environment:
+      - COCKROACH_DATABASE=zitadel
+      - COCKROACH_USER=zitadel
+    volumes:
+      - "./.tmp/roach/certs:/cockroach/certs:rw"
+      - "./.tmp/roach/data:/cockroach/cockroach-data:rw"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health?ready=1"]
+      interval: "10s"
+      timeout: "30s"
+      retries: 5
+      start_period: "20s"
+
+networks:
+  default:
+    name: zitadel
+    driver: bridge

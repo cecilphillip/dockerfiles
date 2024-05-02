@@ -1,0 +1,12 @@
+FirstInstance:
+  Org:
+    Name: DemoOrg
+    Human:
+      # use the loginname admin@admin.co
+      Username: "admin"
+      Password: "$cY0nx2017!"
+      PasswordChangeRequired: false
+      Email:
+        Address: "admin@admin.co"
+        Verified: true
+      PreferredLanguage: en
