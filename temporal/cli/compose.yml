@@ -1,0 +1,10 @@
+services:
+  temporal-cli:
+      build:
+        context: .
+        dockerfile: Dockerfile
+
+networks:
+  default:
+    name: temporalio-network
+    driver: bridge
