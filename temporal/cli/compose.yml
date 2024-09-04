@@ -3,6 +3,9 @@ services:
       build:
         context: .
         dockerfile: Dockerfile
+      ports:
+        - 7233:7233 # GRPC Serivce
+        - 8233:8233 # UI
 
 networks:
   default:
