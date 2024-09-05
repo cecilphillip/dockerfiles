@@ -1,0 +1,9 @@
+services:
+  flagd:
+    image: ghcr.io/open-feature/flagd:latest  
+    restart: unless-stopped
+    ports:
+      - "8013:8013"
+    volumes:
+      - ./.tmp/flagd:/etc/flagd
+    command: ["--uri", ""]
