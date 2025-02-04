@@ -1,56 +1,40 @@
 services:
   zitadel:
-    restart: "always"
-    image: "ghcr.io/zitadel/zitadel:latest"
-    command:
-      [
-        "start-from-init",
-        "--masterkey",
-        "MasterkeyNeedsToHave32Characters",
-        "--tlsMode",
-        "disabled",
-        " --config",
-        "/config/zitadel.yaml",
-        "--steps",
-        "/config/steps.yaml",
-      ]
+    restart: 'always'
+    image: 'ghcr.io/zitadel/zitadel:latest'
+    command: 'start-from-init --masterkey "MasterkeyNeedsToHave32Characters" --tlsMode disabled'
     environment:
-      - "ZITADEL_DATABASE_COCKROACH_HOST=roachserve"
-      - "ZITADEL_DATABASE_COCKROACH_PORT=26257"
-      - "ZITADEL_DATABASE_COCKROACH_DATABASE=zitadel"
-      - "ZITADEL_DATABASE_COCKROACH_USER_USERNAME=zitadel"
-      - "ZITADEL_EXTERNALSECURE=false"
+      ZITADEL_DATABASE_POSTGRES_HOST: db
+      ZITADEL_DATABASE_POSTGRES_PORT: 5432
+      ZITADEL_DATABASE_POSTGRES_DATABASE: zitadel
+      ZITADEL_DATABASE_POSTGRES_USER_USERNAME: zitadel
+      ZITADEL_DATABASE_POSTGRES_USER_PASSWORD: zitadel
+      ZITADEL_DATABASE_POSTGRES_USER_SSL_MODE: disable
+      ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME: postgres
+      ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD: postgres
+      ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE: disable
+      ZITADEL_EXTERNALSECURE: false
     depends_on:
-      cockroach:
-        condition: "service_healthy"
-    volumes:
-      - ./zitadel.yaml:/config/zitadel.yaml
-      - ./steps.yaml:/config/steps.yaml
+      db:
+        condition: 'service_healthy'
     ports:
-      - "8080:8080"
-
-  cockroach:
-    container_name: roachserve
-    hostname: roachserve
-    image: cockroachdb/cockroach:v23.2.4
-    ports:
-      - "26257:26257" # SQL
-      - "8000:8080" # HTTP
-    command: ["start-single-node", "--insecure"]
+      - '8888:8080'
+# username: zitadel-admin@zitadel.localhost
+# password: Password1!
+  db:
+    restart: 'always'
+    image: postgres:16-alpine
     environment:
-      - COCKROACH_DATABASE=zitadel
-      - COCKROACH_USER=zitadel
-    volumes:
-      - "./.tmp/roach/certs:/cockroach/certs:rw"
-      - "./.tmp/roach/data:/cockroach/cockroach-data:rw"
+      PGUSER: postgres
+      POSTGRES_PASSWORD: postgres
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health?ready=1"]
-      interval: "10s"
-      timeout: "30s"
+      test: ["CMD-SHELL", "pg_isready", "-d", "zitadel", "-U", "postgres"]
+      interval: '10s'
+      timeout: '30s'
       retries: 5
-      start_period: "20s"
+      start_period: '20s'
 
 networks:
   default:
     name: zitadel
-    driver: bridge
+    driver: bridge  
